@@ -44,12 +44,19 @@ def steiner(graph, n, nPuntos, puntos):
     edge = [None for i in range(n)]
 
     i = puntos[0]
+    timeout = 100
     while not all(objetivo):
+        if timeout == 0:
+            i = random.randint(0, n - 1) #Si no se encuentra un camino, se elige un punto aleatorio que ya fue visitado
+            while not visited[i]:
+                i = random.randint(0, n - 1)
         rand = random.randint(0, n - 1)
         while graph[i][rand] == 0:
             rand = random.randint(0, n - 1)
         if visited[rand]:
+            timeout -= 1
             continue
+        timeout = 100
         edge[i] = rand
         i = edge[i]
         if rand in puntos:
