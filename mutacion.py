@@ -55,12 +55,12 @@ def steiner(graph, n, nPuntos, puntos):
             while not visited[i]:
                 i = random.randint(0, n - 1)
         rand = random.randint(0, n - 1)
-        while graph[i][rand] == 0:
-            rand = random.randint(0, n - 1)
-        if visited[rand]:
-            timeout -= 1
-            continue
         timeout = 100
+        while graph[i][rand] == 0:
+            if timeout == 0:
+                continue
+            timeout -= 1
+            rand = random.randint(0, n - 1)
         edge[i] = rand
         prev = i
         i = edge[i]
@@ -284,13 +284,13 @@ def cortar_exceso(puntos, steiner):
 
 
 if __name__ == '__main__':
-    matrix = generaGrafo(10, 0.3)
-    puntos = random.sample(range(10), 3)
+    matrix = generaGrafo(15, 0.2)
+    puntos = random.sample(range(15), 5)
     puntos.sort()
     print(puntos)
 
     # Usar el algoritmo evolutivo
-    solucion_final = algoritmo_evolutivo(matrix, 3, puntos, 10000)
+    solucion_final = algoritmo_evolutivo(matrix, 5, puntos, 10000)
     print("\n Mejor solución:")
     print(solucion_final)
 
