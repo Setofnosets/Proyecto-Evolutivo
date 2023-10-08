@@ -169,6 +169,8 @@ def imprimir_grafo(matrix, edges, puntos):
     nx.draw(G, pos=layout, edge_color=edge_colors, node_color=vertex_colors, with_labels=True)
     labels = nx.get_edge_attributes(G, 'weight')
     nx.draw_networkx_edge_labels(G, pos=layout, edge_labels=labels)
+    #Cambiar tamaño
+    plt.rcParams['figure.figsize'] = [10, 10]
     plt.show()
 
 def verificar_arbol(steiner, puntos):
@@ -284,8 +286,8 @@ def cortar_exceso(puntos, steiner):
 
 
 if __name__ == '__main__':
-    matrix = generaGrafo(15, 0.2)
-    puntos = random.sample(range(15), 5)
+    matrix = generaGrafo(20, 0.2)
+    puntos = random.sample(range(20), 5)
     puntos.sort()
     print(puntos)
 
