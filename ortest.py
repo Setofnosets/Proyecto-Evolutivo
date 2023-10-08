@@ -29,7 +29,8 @@ def crear(nombre):
 matriz, puntos, size = crear("steinb2.txt")
 G = nx.from_numpy_array(np.array(matriz))
 layout = nx.spring_layout(G)
-nx.draw(G, layout, with_labels=True)
+vertex_colors = ['blue' if not vertex in puntos else 'green' for vertex in G.nodes()]
+nx.draw(G, layout, with_labels=True, node_color=vertex_colors)
 labels = nx.get_edge_attributes(G, 'weight')
 nx.draw_networkx_edge_labels(G, pos=layout, edge_labels=labels)
 plt.show()
