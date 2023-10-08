@@ -4,17 +4,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 
-def generaGrafo(nombre,filas, columnas):
+def generaGrafo(nombre):
     
     arch = open(nombre)
-    
+    size = int(arch.readline())
+    puntos = list(map(int, arch.readline().split()))
     matriz = []
-    for i in range(filas):
+    for i in range(size):
         fila = list(map(int, arch.readline().split()))
-        matriz.append(fila[:columnas])  # Agrega solo las primeras 'columnas' columnas de la fila
+        matriz.append(fila[:size])  # Agrega solo las primeras 'columnas' columnas de la fila
 
     arch.close()
-    return matriz
+    return matriz, puntos, size
 
 def steiner(graph, n, nPuntos, puntos):
     objetivo = [False for i in range(nPuntos)]
@@ -130,6 +131,8 @@ def imprimir_grafo(matrix, edges, puntos):
             else:
                 E.append((edges[i], i))
     E.sort()
+    #Eliminar duplicados
+    E = list(dict.fromkeys(E))
 
     print("Coordenadas: ")
     print(E)
@@ -146,6 +149,8 @@ def imprimir_grafo(matrix, edges, puntos):
     nx.draw(G, pos=layout, edge_color=edge_colors, node_color=vertex_colors, with_labels=True)
     labels = nx.get_edge_attributes(G, 'weight')
     nx.draw_networkx_edge_labels(G, pos=layout, edge_labels=labels)
+    #Cambiar tamaño de la imagen
+    plt.rcParams['figure.figsize'] = [10, 10]
     plt.show()
 
 def verificar_arbol(steiner, puntos):
@@ -176,7 +181,6 @@ def verificar_arbol(steiner, puntos):
 
     return True
 
-# TODO: Preguntar si se deberia utilizar
 def cortar_exceso(puntos, steiner):
     coordenadas = []
     for i in range(len(steiner)):
@@ -210,16 +214,17 @@ def cortar_exceso(puntos, steiner):
     return nuevo_steiner
 
 if __name__ == "__main__":
-    if(len(sys.argv) < 5):
-        print("Sintaxis: main.py <nombre_archivo> <tamaño_del_archivo> <puntos_steiner> <número_generaciones>")
+    if(len(sys.argv) < 3):
+        #print("Sintaxis: main.py <nombre_archivo> <tamaño_del_archivo> <puntos_steiner> <número_generaciones>")
+        print("Sintaxis: main.py <nombre_archivo> <número_generaciones>")
     else:
-        matrix = generaGrafo(sys.argv[1],int(sys.argv[2]),int(sys.argv[2]))
-        puntos = random.sample(range(int(sys.argv[2])), int(sys.argv[3]))
+        matrix, puntos, size = generaGrafo(sys.argv[1])
+        #puntos = random.sample(range(int(sys.argv[2])), int(sys.argv[3]))
         puntos.sort()
         print(puntos)
 
         # Usar el algoritmo evolutivo
-        solucion_final = algoritmo_evolutivo(matrix, int(sys.argv[3]), puntos, int(sys.argv[4]))
+        solucion_final = algoritmo_evolutivo(matrix, len(puntos), puntos, int(sys.argv[2]))
         print("\n Mejor solución:")
         print(solucion_final)
 
