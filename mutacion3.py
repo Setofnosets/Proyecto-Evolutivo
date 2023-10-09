@@ -25,6 +25,38 @@ def generaGrafo(nombre):
     arch.close()
     return matriz, puntos, size
 
+def generaGrafoOR(nombre):
+
+    archivo = open(nombre, "r")
+    #sizes[0] = cantidad de puntos, sizes[1] = cantidad de conexiones
+    sizes = list(map(int, archivo.readline().split()))
+    #Genera matriz con ceros
+    matriz = []
+    for i in range(sizes[0]):
+        matriz.append([])
+        for j in range(sizes[0]):
+            matriz[i].append(0)
+
+    for i in range(sizes[1]):
+        linea = list(map(int, archivo.readline().split()))
+        matriz[linea[0] - 1][linea[1] - 1] = linea[2]
+        matriz[linea[1] - 1][linea[0] - 1] = linea[2]
+
+    npuntos = int(archivo.readline())
+    puntos = list(map(int, archivo.readline().split()))
+
+    print("DATOS DEL CASO DEL PROBLEMA")
+    print("Nombre:", nombre)
+    print("Numero de puntos de Steiner:", len(puntos))
+    print("Puntos de Steiner:", puntos)
+
+    print("Matriz: ")
+    print('\n'.join(['\t'.join([str(cell) for cell in row]) for row in matriz]))
+
+    archivo.close()
+
+    return matriz, puntos, sizes[0]
+
 def steiner(graph, n, nPuntos, puntos):
     objetivo = [False for i in range(nPuntos)]
     objetivo[0] = True
@@ -44,9 +76,11 @@ def steiner(graph, n, nPuntos, puntos):
         timeout = 100
         while graph[i][rand] == 0:
             if timeout == 0:
-                continue
+                break
             timeout -= 1
             rand = random.randint(0, n - 1)
+        if timeout == 0:
+            continue
         edge[i] = rand
         prev = i
         i = edge[i]
@@ -224,18 +258,20 @@ def cortar_exceso(puntos, steiner):
     return nuevo_steiner
 
 if __name__ == "__main__":
-    if(len(sys.argv) < 3):
+    if(len(sys.argv) < 4):
         #print("Sintaxis: main.py <nombre_archivo> <tamaño_del_archivo> <puntos_steiner> <número_generaciones>")
-        print("Sintaxis: main.py <nombre_archivo> <número_generaciones>")
+        print("Sintaxis: main.py <modo> <nombre_archivo> <número_generaciones>")
     else:
-        
-        matrix, puntos, size = generaGrafo(sys.argv[1])
+        if sys.argv[1] == "OR":
+            matrix, puntos, size = generaGrafoOR(sys.argv[2])
+        else:
+            matrix, puntos, size = generaGrafo(sys.argv[2])
         #puntos = random.sample(range(int(sys.argv[2])), int(sys.argv[3]))
         #puntos.sort()
         #print(puntos)
 
         # Usar el algoritmo evolutivo
-        solucion_final,mejor_generacion = algoritmo_evolutivo(matrix, len(puntos), puntos, int(sys.argv[2]))
+        solucion_final,mejor_generacion = algoritmo_evolutivo(matrix, len(puntos), puntos, int(sys.argv[3]))
         print("\n**** Mejor Generacion ",mejor_generacion,": \n")
         print("Mejor Solucion:",solucion_final)
         # Imprimir grafo final
