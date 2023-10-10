@@ -28,7 +28,6 @@ def generaGrafo(nombre):
 
 def generaGrafoOR(nombre):
     archivo = open(nombre, "r")
-    # sizes[0] = cantidad de puntos, sizes[1] = cantidad de conexiones
     sizes = list(map(int, archivo.readline().split()))
     # Genera matriz con ceros
     matriz = []
@@ -49,8 +48,6 @@ def generaGrafoOR(nombre):
         for i in range(len(linea)):
             puntos.append(linea[i] - 1)
         npuntos -= 1
-
-    # puntos = list(map(int, archivo.readline().split()))
 
     print("DATOS DEL CASO DEL PROBLEMA")
     print("Nombre:", nombre)
@@ -94,14 +91,11 @@ def steiner(graph, n, nPuntos, puntos):
         if timeout == 0:
             continue
         edge.append([i, rand])
-        #edge[i] = rand
-        #print("Elegido:", i, "->", rand)
         prev = i
         i = rand
         if rand in puntos and not objetivo[puntos.index(rand)]:
             objetivo[puntos.index(rand)] = True
         visited[rand] = True
-    #edge[i] = prev
     edge.append([i, prev])
     print("Solucion:", edge)
 
@@ -112,7 +106,6 @@ def steiner(graph, n, nPuntos, puntos):
 
 
 def mutacion_reconexion_nodo(steiner, puntos, graph):
-    #nodos_validos = [True if steiner[i] != None else False for i in range(len(steiner))]
     # Encontrar nodos ya visitados
     nodos_validos = [False for i in range(len(graph))]
     for nodo in steiner:
@@ -128,24 +121,19 @@ def mutacion_reconexion_nodo(steiner, puntos, graph):
     while nodos_validos[nodo_origen] == False:
         nodo_origen = random.randint(0, (len(graph)) - 1)
 
-    # print(nodo_origen)
     # Filtrar los nodos de destino válidos que estén en el árbol y sean conectables desde el nodo origen
-    # nodos_destino_validos = [p for p in puntos if p != nodo_origen and any(graph[nodo_origen][p] != 0 for p in range (len(graph[nodo_origen]))) and p in steiner and nodos_validos[p]== True]
     nodos_destinos_validos = [True if graph[nodo_origen][i] != 0 and nodos_validos[i] == True else False for i in
                               range(len(graph[nodo_origen]))]
 
     if any(nodos_destinos_validos) == False:
         return steiner  # Evitar mutar si no hay nodos de destino válidos
 
-    # nodo_destino = random.choice(nodos_destino_validos)
     nodo_destino = random.randint(0, (len(graph)) - 1)
     while nodos_destinos_validos[nodo_destino] == False:
         nodo_destino = random.randint(0, (len(graph)) - 1)
         while nodo_destino == nodo_origen:
             nodo_destino = random.randint(0, (len(graph)) - 1)
 
-    #steiner[nodo_origen] = nodo_destino
-    #TERRIBLE MANERA DE HACERLO PERO NO TENGO PACIENCIA
     conexion = []
     for nodo in steiner:
         if nodo is not None and nodo[0] == nodo_origen:
@@ -161,12 +149,6 @@ def mutacion_reconexion_nodo(steiner, puntos, graph):
         elif n is not None and n[1] == nodo_origen and n[0] == conexion[rand]:
             steiner.remove(n)
             break
-    """if (nodo_origen, conexion[rand]) in steiner:
-        steiner.remove((nodo_origen, conexion[rand]))
-    elif (conexion[rand], nodo_origen) in steiner:
-        steiner.remove((conexion[rand], nodo_origen))
-    else:
-        print("Error al eliminar arista")"""
 
     steiner.append((nodo_origen, nodo_destino))
 
@@ -187,7 +169,6 @@ def aptitud(steiner, graph, puntos):
     if verificar_arbol(edge, puntos) == False:
         return 1000000
 
-    #peso_total = sum(graph[i][edge[i]] for i in range(len(edge)) if edge[i] is not None)
     peso_total = sum(graph[edge[i][0]][edge[i][1]] for i in range(len(edge)))
     return peso_total
 
@@ -208,15 +189,11 @@ def algoritmo_evolutivo(graph, nPuntos, puntos, generaciones_max):
             mejor_solucion = solucion_mutada
             mejor_aptitud = aptitud_mutada
             mejor_generacion = generacion
-            # print("*** Generación ", mejor_generacion, ":\n f(x) =", mejor_aptitud, "\n x = ", mejor_solucion, "\n")
 
-    # print("\nAptitud Final : ", mejor_aptitud)
     return mejor_solucion, mejor_generacion
 
 
 def imprimir_grafo(matrix, edges, puntos):
-    # Eliminar duplicados
-    #edges = list(dict.fromkeys(edges))
     edges = cortar_exceso(puntos, edges)
     print("Coordenadas: ", edges)
 
@@ -228,8 +205,6 @@ def imprimir_grafo(matrix, edges, puntos):
     # Imprimir grafo
     G = nx.from_numpy_array(np.matrix(matrix))
     layout = nx.spring_layout(G)
-    #edge_colors = ['black' if not edge in edges else 'red' for edge in G.edges()]
-    #black = aristas del grafo original, red = aristas del árbol de Steiner
     edge_colors = ['black' if not edge in edges else 'red' for edge in G.edges()]
     edge_list = list(G.edges())
 
@@ -293,7 +268,6 @@ def cortar_exceso(puntos, steiner):
 
 if __name__ == "__main__":
     if (len(sys.argv) < 4):
-        # print("Sintaxis: main.py <nombre_archivo> <tamaño_del_archivo> <puntos_steiner> <número_generaciones>")
         print("Sintaxis: main.py <modo: M/OR> <nombre_archivo> <número_generaciones>")
     else:
         if sys.argv[1] == "OR":
@@ -303,9 +277,6 @@ if __name__ == "__main__":
         else:
             print("Sintaxis: main.py <modo: M/OR> <nombre_archivo> <número_generaciones>")
             exit()
-        # puntos = random.sample(range(int(sys.argv[2])), int(sys.argv[3]))
-        # puntos.sort()
-        # print(puntos)
 
         # Usar el algoritmo evolutivo
         solucion_final, mejor_generacion = algoritmo_evolutivo(matrix, len(puntos), puntos, int(sys.argv[3]))
