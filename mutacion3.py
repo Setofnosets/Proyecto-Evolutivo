@@ -43,7 +43,14 @@ def generaGrafoOR(nombre):
         matriz[linea[1] - 1][linea[0] - 1] = linea[2]
 
     npuntos = int(archivo.readline())
-    puntos = list(map(int, archivo.readline().split()))
+    puntos = []
+    while npuntos > 0:
+        linea = list(map(int, archivo.readline().split()))
+        for i in range(len(linea)):
+            puntos.append(linea[i] - 1)
+        npuntos -= 1
+
+    #puntos = list(map(int, archivo.readline().split()))
 
     print("DATOS DEL CASO DEL PROBLEMA")
     print("Nombre:", nombre)
@@ -51,7 +58,7 @@ def generaGrafoOR(nombre):
     print("Puntos de Steiner:", puntos)
 
     print("Matriz: ")
-    print('\n'.join(['\t'.join([str(cell) for cell in row]) for row in matriz]))
+    #print('\n'.join(['\t'.join([str(cell) for cell in row]) for row in matriz]))
 
     archivo.close()
 
@@ -260,12 +267,15 @@ def cortar_exceso(puntos, steiner):
 if __name__ == "__main__":
     if(len(sys.argv) < 4):
         #print("Sintaxis: main.py <nombre_archivo> <tamaño_del_archivo> <puntos_steiner> <número_generaciones>")
-        print("Sintaxis: main.py <modo> <nombre_archivo> <número_generaciones>")
+        print("Sintaxis: main.py <modo: M/OR> <nombre_archivo> <número_generaciones>")
     else:
         if sys.argv[1] == "OR":
             matrix, puntos, size = generaGrafoOR(sys.argv[2])
-        else:
+        elif sys.argv[1] == "M":
             matrix, puntos, size = generaGrafo(sys.argv[2])
+        else:
+            print("Sintaxis: main.py <modo: M/OR> <nombre_archivo> <número_generaciones>")
+            exit()
         #puntos = random.sample(range(int(sys.argv[2])), int(sys.argv[3]))
         #puntos.sort()
         #print(puntos)
